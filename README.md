@@ -1,5 +1,5 @@
 # dev
-development environment with ssh access and use of docker host environment
+ubuntu development environment with ssh access and use of docker host environment
 
 Midnight Commander and nano included. Change root password in Dockerfile before building image. Mount volume at /srv
 
