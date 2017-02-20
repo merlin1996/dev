@@ -28,7 +28,7 @@ RUN wget -qO- https://github.com/rancher/cli/releases/download/v0.4.1/rancher-li
     mv /tmp/rancher-v0.4.1/rancher /usr/local/bin/rancher && \
     chmod +x /usr/local/bin/rancher
 
-VOLUME /var/run/docker.sock /srv
+VOLUME /var/run/docker.sock /root
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
