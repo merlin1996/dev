@@ -14,3 +14,5 @@ Example call:
 docker run -d -p 2222:22 -v /var/run/docker.sock:/var/run/docker.sock -v /mnt/data/dev01:/root merlin96/dev:latest
 
 ssh root@192.168.1.1 -p 2222
+
+outdated, do not use
