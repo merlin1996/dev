@@ -37,6 +37,7 @@ paths:
       summary: Get all backup configurations
     post:
       requestBody:
+        description: ""
         content:
           application/json:
             schema:
