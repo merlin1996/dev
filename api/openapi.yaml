@@ -1,0 +1,183 @@
+---
+openapi: 3.0.2
+info:
+  title: bbackup
+  version: 1.0.0
+  description: bbackup api
+  contact:
+    name: Merlin Bruu
+    email: merlin@bruu.eu
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+servers:
+- url: http://localhost:8081/api/v1
+  description: Development
+paths:
+  /config:
+    get:
+      tags:
+      - config
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              examples:
+                configlist:
+                  value:
+                  - "1234"
+                  - "1235"
+                  - "1236"
+          description: Return list of all backup configuration
+      operationId: api.get_configlist
+      summary: Get all backup configurations
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/config_type'
+            examples:
+              create_config_with_config_id:
+                value:
+                  config_id: "1234"
+                  repo: /var/bbackup/1234
+                  input: /mnt/host1/var,/mnt/host1/etc
+              create_config_with_no_config_id:
+                value:
+                  repo: /var/bbackup/special_unique_path
+                  input: /mnt/host1/var,/mnt/host1/etc
+        required: true
+      tags:
+      - config
+      responses:
+        "201":
+          description: Backup config created
+        "409":
+          description: duplicate config_id
+        "302":
+          description: repo reused
+      operationId: api.create_config
+      summary: Create a backup configuration
+      description: |-
+        config_id is optional;
+        if no config_id is given a unique config_id will be created
+  /config/{config_id}:
+    get:
+      tags:
+      - config
+      parameters:
+      - examples:
+          config_id:
+            value: "1234"
+        name: config_id
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/config_type'
+              examples:
+                get_config:
+                  value:
+                    config_id: "1234"
+                    repo: /var/bbackup/1234
+                    input: /mnt/host1/var,/mnt/host1/etc
+          description: backup config
+        "404":
+          description: config_id not found
+      operationId: api.get_config
+      summary: get backup config by config_id
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/config_type'
+            examples:
+              update_config:
+                value:
+                  input: /mnt/host1/var,/mnt/host1/etc
+        required: true
+      tags:
+      - config
+      parameters:
+      - examples:
+          config_id:
+            value: "1234"
+        name: config_id
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "202":
+          description: backup configuration updated
+        "204":
+          description: Nothing changed
+        "404":
+          description: config_id not found
+      operationId: api.update_config
+      summary: update backup configuration
+      description: |-
+        config_id will not be changed (204);
+        repo path will not be changed (204)
+    delete:
+      tags:
+      - config
+      parameters:
+      - examples:
+          config_id:
+            value: "1234"
+        name: config_id
+        schema:
+          type: string
+        in: path
+        required: true
+      responses:
+        "205":
+          description: backup configuration deleted
+        "404":
+          description: config_id not found
+      operationId: api.delete_config
+      summary: delete backup configuration
+      description: |-
+        backup configuration will be deleted;
+        backup repository is not deleted;
+        all security keys are deleted
+components:
+  schemas:
+    config_type:
+      title: Root Type for config_type
+      description: Description of config type
+      required:
+      - input
+      type: object
+      properties:
+        repo:
+          description: |-
+            path to repo folder;
+            repo path could not be changed
+          type: string
+        input:
+          description: |-
+            a path or many paths of input files or folders;
+            comma seperated when more than one path;
+          type: string
+        config_id:
+          description: |-
+            config_id is optional when created
+            config_id could not be updated
+          type: string
+      example:
+        config_id: "1234"
+        repo: /var/bbackup/1234
+        input: /mnt/host1/var,/mnt/host1/etc
